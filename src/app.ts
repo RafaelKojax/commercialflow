@@ -1,6 +1,8 @@
-import express from 'express';
+//import express, { ErrorRequestHandler } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import { productRoutes } from './routes/productRoutes.js';
 
 export const app = express();
 
@@ -18,3 +20,17 @@ app.get('/health', (req, res) => {
         database: isDatabaseConnected ? 'connected' : 'disconnected',
     });
 });
+
+app.use('/api/products', productRoutes);
+
+// Tratamento global de exceções não capturadas
+//const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error('Erro inesperado na API:', err);
+    res.status(500).json({
+        status: 'error',
+        message: 'Erro interno do servidor.',
+    });
+});
+
+//app.use(errorHandler);  
