@@ -7,7 +7,7 @@ export interface IOrderItem {
     sku: string;
     name: string;
     quantity: number;
-    unityPrice: number;
+    unitPrice: number;
     totalPrice: number;
 }
 
@@ -17,7 +17,7 @@ export interface IOrder extends Document {
     cnpj: string;
     contactEmail: string;
     contactPhone: string;
-    items: IOrderItem [];
+    items: IOrderItem[];
     totalAmount: number;
     status: OrderStatus;
     notes?: string;
@@ -30,7 +30,7 @@ const OrderItemSchema = new Schema<IOrderItem> ({
     sku: { type: String, required: true },
     name: { type: String, required: true },
     quantity: { type: Number, required: true, min: 1 },
-    unityPrice: { type: Number, required: true, min: 0 },
+    unitPrice: { type: Number, required: true, min: 0 },
     totalPrice: { type: Number, required: true, min: 0},
 },
 { _id: false }
@@ -53,3 +53,9 @@ const OrderSchema = new Schema<IOrder>({
 },
 { timestamps: true }
 );
+
+// Índice para o painel de pedidos: ordenação por data e filtros por status
+OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ status: 1, createdAt: -1 });
+
+export const Order = mongoose.model<IOrder>('Order', OrderSchema);

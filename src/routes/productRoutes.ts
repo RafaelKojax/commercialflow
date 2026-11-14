@@ -5,6 +5,6 @@ export const productRoutes = Router();
 
 productRoutes.get('/', ProductController.list);
 productRoutes.get('/:id', ProductController.getById);
-productRoutes.get('/', ProductController.create);
-productRoutes.get('/:id', ProductController.update);
-productRoutes.get('/:id', ProductController.remove);
+productRoutes.post('/', ProductController.create);
+productRoutes.patch('/:id', ProductController.update);
+productRoutes.delete('/:id', ProductController.remove);

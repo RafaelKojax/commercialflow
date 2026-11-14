@@ -1,8 +1,8 @@
-//import express, { ErrorRequestHandler } from 'express';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { productRoutes } from './routes/productRoutes.js';
+import { orderRoutes } from './routes/orderRoutes.js';
 
 export const app = express();
 
@@ -22,9 +22,9 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Tratamento global de exceções não capturadas
-//const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error('Erro inesperado na API:', err);
     res.status(500).json({
@@ -33,4 +33,3 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-//app.use(errorHandler);  
