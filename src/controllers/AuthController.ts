@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 import { loginSchema } from '../schemas/authSchema.js';
-import { request } from 'node:http';
 
 export class AuthController {
     //POST /api/auth/login
@@ -24,7 +23,7 @@ export class AuthController {
         const { email, password } = parsed.data;
         const user = await User.findOne({ email });
 
-        if (!user) {
+        if (!user || !user.passwordHash) {
             return res.status(401).json({
                 status: 'error',
                 message: 'E-mail ou senha incorretos.',
