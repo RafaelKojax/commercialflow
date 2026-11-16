@@ -5,10 +5,10 @@ export async function ensureAdminUser(): Promise<void> {
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@commercialflow.com.br';
     const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@2026';
 
-    const existingAdmin = await User.findOne({ email: adminEmail }).lean();
-    if (existingAdmin) {
-        return;
-    }
+    //const existingAdmin = await User.findOne({ email: adminEmail }).lean();
+    //if (existingAdmin) {
+    //    return;
+    //}
 
     const passwordHash = await bcrypt.hash(adminPassword, 10);
 
