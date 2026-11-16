@@ -1,9 +1,15 @@
 import  { Router } from 'express';
 import { OrderController } from '../controllers/OrderController.js';
+import { requireAuth } from '../middlewares/authMiddleware.js';
 
 export const orderRoutes = Router();
 
-orderRoutes.get('/', OrderController.list);
-orderRoutes.get('/:id', OrderController.getById);
+// Vitrine pública
 orderRoutes.post('/', OrderController.create);
-orderRoutes.patch('/:id/status', OrderController.updateStatus);
+orderRoutes.get('/track/:orderNumber', OrderController.trackByOrderNumber);
+
+
+orderRoutes.get('/metrics', requireAuth, OrderController.getDashboardMetrics);
+orderRoutes.get('/', requireAuth, OrderController.list);
+orderRoutes.patch('/:id', requireAuth, OrderController.getById);
+orderRoutes.patch('/:id/status', requireAuth, OrderController.updateStatus);

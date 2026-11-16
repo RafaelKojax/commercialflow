@@ -30,7 +30,7 @@ export class ProductController {
             data: product,
         });
     }
-    // GET /api/products?page=1&limit=10&category=...&search=...
+    //GET /api/products?page=1&limit=10&category=...&search=...
     static async list(req: Request, res: Response): Promise<Response> {
         const parseQuery = listProductQuerySchema.safeParse(req.query);
 

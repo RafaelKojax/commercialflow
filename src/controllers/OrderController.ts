@@ -237,5 +237,77 @@ export class OrderController {
             data: existingOrder,
         });
     }
+
+    // GET /api/orders/track/:orderNumber (Público - Vitrine B2B)
+    static async trackByOrderNumber(req: Request, res: Response): Promise<Response> {
+        const orderNumber = String(req.params.orderNumber).trim().toUpperCase();
+
+        const order = await Order.findOne({ orderNumber })
+          .select('orderNumber companyName status items totalAmount createdAt updateAt')
+          .lean();
+        
+        if (!order) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Pedido não encontrado. Verifique o código informado.',
+            });
+        }
+
+        return res.status(200).json({
+            status: 'error',
+            date: order, 
+        });
+    }
+
+    // GET /api/orders/metrics (Protegido - Dashboard Administrativo)
+    static async getDashboardMetrics(req: Request, res: Response): Promise<Response> {
+        const [statusSummary, totalActiveProducts, lowStockProducts] = await Promise.all([
+            Order.aggregate([
+                {
+                    $group: {
+                        _id: '$status',
+                        count: { $sum: 1 },
+                        revenue: {$sum: '$totalAmout' },
+                    },
+                },
+            ]),
+            Product.countDocuments({isActive: true }),
+            Product.find({ isActive: true, stockQuantity: { $lte: 5 }})
+                .select('sku name stockQuantity minOrderQuantity')
+                .sort({ stockQuantity: 1 })
+                .limit(10)
+                .lean(),
+        ]);
+
+        const ordersByStatus: Record<string, number> = {
+            PEDING: 0,
+            IN_SEPARATION: 0,
+            APPROVED: 0,
+            DISPATCHED: 0,
+            CANCELLED: 0,
+        };
+
+        let totalRevenue = 0;
+        let totalOrders = 0;
+
+        for (const item of statusSummary) {
+            ordersByStatus[item._id] = item.count;
+            totalOrders += item.count;
+            if (item._id !== 'CANCELLED') {
+                totalRevenue = Number((totalRevenue + item.revenue).toFixed(2));
+            }
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: {
+                totalRevenue,
+                totalOrders,
+                totalActiveProducts,
+                ordersByStatus,
+                lowStockProducts,
+            },
+        });
+    }
     
 }

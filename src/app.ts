@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import { authRoutes } from './routes/authRoutes.js';
 import { productRoutes } from './routes/productRoutes.js';
 import { orderRoutes } from './routes/orderRoutes.js';
 
@@ -21,8 +22,10 @@ app.get('/health', (req, res) => {
     });
 });
 
+app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+
 
 // Tratamento global de exceções não capturadas
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
