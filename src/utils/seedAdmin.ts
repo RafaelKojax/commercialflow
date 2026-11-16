@@ -12,13 +12,17 @@ export async function ensureAdminUser(): Promise<void> {
 
     const passwordHash = await bcrypt.hash(adminPassword, 10);
 
-    await User.create({
-        name: 'Administrator CommercialFlow',
-        email: adminEmail,
-        passwordHash,
-        role: 'ADMIN',
-    });
+    await User.findOneAndUpdate(
+        { email: adminEmail },    
+        {
+            name: 'Administrator CommercialFlow',
+            email: adminEmail,
+            passwordHash,
+            role: 'ADMIN',
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
-    console.log(`Usuário administrador inicializando: ${adminEmail}`);
+    console.log(`Usuário administrador sincronizado: ${adminEmail}`);
 }
 

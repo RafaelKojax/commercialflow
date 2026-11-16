@@ -6,7 +6,7 @@ export interface IUser extends Document {
     passwordHash: string;
     role: 'ADMIN';
     createdAt: Date;
-    upateAt: Date;
+    updateAt: Date;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -22,6 +22,10 @@ const UserSchema = new Schema<IUser>(
         unique: true,
         lowercase: true,
         trim: true,
+    },
+    passwordHash: {
+        type: String,
+        required: true,
     },
     role: {
         type: String,
