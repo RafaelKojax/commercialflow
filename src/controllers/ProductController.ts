@@ -52,12 +52,19 @@ export class ProductController {
     }
 
     if (search) {
-      filter.$text = { $search: search };
+      const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(escapedSearch, 'i');
+      filter.$or = [
+        { sku: regex },
+        { name: regex },
+        { category: regex },
+        { description: regex },
+      ];
     }
 
     const [products, total] = await Promise.all([
       Product.find(filter)
-        .sort(search ? { score: { $meta: 'textScore' } } : { createdAt: -1 })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),
